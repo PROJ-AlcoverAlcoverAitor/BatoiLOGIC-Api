@@ -1,5 +1,6 @@
 package com.batoilogic.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,11 +18,13 @@ public class TarifaProveedor {
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("productoId")
     @JoinColumn(name = "producto_id")
+    @JsonIgnore
     private Producto producto;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("proveedorId")
     @JoinColumn(name = "proveedor_id")
+    @JsonIgnore
     private Proveedor proveedor;
 
     @Column(nullable = false, precision = 10, scale = 2)
