@@ -19,6 +19,9 @@ public class Pedido {
     @Column(name = "repartidor_id")
     private Long repartidorId;
 
+    @Column(name = "cliente_id")
+    private Long clienteId;
+
     @Column(nullable = false, length = 100)
     private String cliente;
 
@@ -28,8 +31,9 @@ public class Pedido {
     @Column(nullable = false)
     private LocalDate fecha;
 
+    // Estados según enunciado: EN PREPARACIÓ, PREPARAT, EN RUTA, ENTREGAT, NO ENTREGAT
     @Column(nullable = false, length = 50)
-    private String estado = "En ruta";
+    private String estado = "EN PREPARACIÓ";
 
     @Column(nullable = false, length = 20)
     private String telefono;
