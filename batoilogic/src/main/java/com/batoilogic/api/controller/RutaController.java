@@ -135,4 +135,17 @@ public class RutaController {
 
         return ResponseEntity.ok(ruta);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getRuta(@PathVariable Long id, HttpServletRequest request) {
+        String rol = (String) request.getAttribute("rol");
+        if (!"admin".equals(rol)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Solo admin"));
+        }
+
+        Optional<Ruta> opt = rutaRepo.findById(id);
+        if (opt.isEmpty()) return ResponseEntity.status(404).body(Map.of("error", "Ruta no encontrada"));
+
+        return ResponseEntity.ok(opt.get());
+    }
 }

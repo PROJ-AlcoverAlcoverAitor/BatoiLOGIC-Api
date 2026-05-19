@@ -1,5 +1,6 @@
 package com.batoilogic.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,13 +15,14 @@ public class Direccion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "cliente_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Cliente cliente;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cp_id", nullable = false)
-    private CodigoPostal codigoPostal;
+    @ManyToOne()
+    @JoinColumn(name = "municipio_codi", nullable = false)
+    private Municipio municipio;
 
     @Column(nullable = false, length = 255)
     private String calle;

@@ -16,16 +16,16 @@ public class ClienteController {
 
     private final ClienteRepository clienteRepo;
     private final DireccionRepository direccionRepo;
-    private final CodigoPostalRepository cpRepo;
+    private final MunicipioRepository municipioRepo;
     private final PedidoRepository pedidoRepo;
 
     public ClienteController(ClienteRepository clienteRepo,
                              DireccionRepository direccionRepo,
-                             CodigoPostalRepository cpRepo,
+                             MunicipioRepository municipioRepo,
                              PedidoRepository pedidoRepo) {
         this.clienteRepo = clienteRepo;
         this.direccionRepo = direccionRepo;
-        this.cpRepo = cpRepo;
+        this.municipioRepo = municipioRepo;
         this.pedidoRepo = pedidoRepo;
     }
 
@@ -94,7 +94,7 @@ public class ClienteController {
                                           @RequestParam String calle,
                                           @RequestParam(required = false) String numero,
                                           @RequestParam(required = false) String piso,
-                                          @RequestParam String codigoPostal,
+                                          @RequestParam String codigoMunicipio,
                                           @RequestParam(defaultValue = "false") Boolean esPrincipal,
                                           HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
@@ -107,12 +107,15 @@ public class ClienteController {
         Optional<Cliente> cliente = clienteRepo.findById(id);
         if (cliente.isEmpty()) return ResponseEntity.status(404).body(Map.of("error", "Cliente no encontrado"));
 
-        Optional<CodigoPostal> cp = cpRepo.findByCodigo(codigoPostal);
-        if (cp.isEmpty()) return ResponseEntity.status(404).body(Map.of("error", "Código postal no encontrado"));
+        Optional<Municipio> munOpt = municipioRepo.findById(codigoMunicipio);
+
+        if (munOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("error", "Municipio o código no encontrado"));
+        }
 
         Direccion d = new Direccion();
         d.setCliente(cliente.get());
-        d.setCodigoPostal(cp.get());
+        d.setMunicipio(munOpt.get());
         d.setCalle(calle);
         d.setNumero(numero);
         d.setPiso(piso);
@@ -156,5 +159,33 @@ public class ClienteController {
 
         List<?> pedidos = pedidoRepo.findByClienteId(id);
         return ResponseEntity.ok(Map.of("pedidos", pedidos));
+    }
+
+    @PatchMapping("/{id}/direcciones/{dirId}/principal")
+    public ResponseEntity<?> marcarPrincipal(@PathVariable Long id,
+                                             @PathVariable Long dirId,
+                                             HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        String rol = (String) request.getAttribute("rol");
+
+        if (!"admin".equals(rol) && !userId.equals(id)) {
+            return ResponseEntity.status(403).body(Map.of("error", "No autorizado"));
+        }
+
+        // Desmarcar todas las direcciones del cliente
+        direccionRepo.findByClienteId(id).forEach(d -> {
+            d.setEsPrincipal(false);
+            direccionRepo.save(d);
+        });
+
+        // Marcar la seleccionada como principal
+        Optional<Direccion> opt = direccionRepo.findById(dirId);
+        if (opt.isEmpty()) return ResponseEntity.status(404).body(Map.of("error", "Dirección no encontrada"));
+
+        Direccion d = opt.get();
+        d.setEsPrincipal(true);
+        direccionRepo.save(d);
+
+        return ResponseEntity.ok(Map.of("mensaje", "Dirección marcada como principal"));
     }
 }
