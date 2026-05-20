@@ -30,7 +30,7 @@ public class PedidoController {
     private final DireccionRepository direccionRepo;
 
     private static final List<String> ESTADOS_VALIDOS =
-            List.of("EN PREPARACIÓ", "PREPARAT", "EN RUTA", "ENTREGAT", "NO ENTREGAT");
+            List.of("En Preparación", "En ruta", "Entregado", "No entregado");
 
     // Constructor actualizado con todos los repositorios necesarios
     public PedidoController(PedidoRepository pedidoRepo,
@@ -87,7 +87,7 @@ public class PedidoController {
         pedido.setFecha(LocalDate.parse(fecha));
         pedido.setTelefono(telefono);
         pedido.setRepartidorId(repartidor_id);
-        pedido.setEstado("EN PREPARACIÓ");
+        pedido.setEstado("En preparación");
         pedido.setLat(coords[0]);
         pedido.setLng(coords[1]);
 
