@@ -43,7 +43,26 @@ public class RutaController {
         } else {
             return ResponseEntity.status(403).body(Map.of("error", "No autorizado"));
         }
-        return ResponseEntity.ok(rutas);
+
+        List<Map<String, Object>> result = rutas.stream().map(r -> {
+            Map<String, Object> m = new java.util.HashMap<>();
+            m.put("id", r.getId());
+            m.put("fecha", r.getFecha());
+            m.put("estado", r.getEstado());
+            m.put("repartidor", Map.of(
+                    "id", r.getRepartidor().getId(),
+                    "nombre", r.getRepartidor().getNombre()
+            ));
+            m.put("pedidos", r.getPedidos().stream().map(p -> {
+                Map<String, Object> pm = new java.util.HashMap<>();
+                pm.put("id", p.getId());
+                pm.put("estado", p.getEstado());
+                return pm;
+            }).toList());
+            return m;
+        }).toList();
+
+        return ResponseEntity.ok(result);
     }
 
     // POST /rutas — crear ruta y asignar repartidor
@@ -139,13 +158,35 @@ public class RutaController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getRuta(@PathVariable Long id, HttpServletRequest request) {
         String rol = (String) request.getAttribute("rol");
-        if (!"admin".equals(rol)) {
+        if (!"admin".equals(rol))
             return ResponseEntity.status(403).body(Map.of("error", "Solo admin"));
-        }
 
         Optional<Ruta> opt = rutaRepo.findById(id);
-        if (opt.isEmpty()) return ResponseEntity.status(404).body(Map.of("error", "Ruta no encontrada"));
+        if (opt.isEmpty())
+            return ResponseEntity.status(404).body(Map.of("error", "Ruta no encontrada"));
 
-        return ResponseEntity.ok(opt.get());
+        Ruta r = opt.get();
+        Map<String, Object> result = new java.util.HashMap<>();
+        result.put("id", r.getId());
+        result.put("fecha", r.getFecha());
+        result.put("estado", r.getEstado());
+        result.put("repartidor", Map.of(
+                "id", r.getRepartidor().getId(),
+                "nombre", r.getRepartidor().getNombre()
+        ));
+        result.put("pedidos", r.getPedidos().stream().map(p -> {
+            Map<String, Object> pm = new java.util.HashMap<>();
+            pm.put("id", p.getId());
+            pm.put("cliente", p.getCliente());
+            pm.put("direccion", p.getDireccion());
+            pm.put("estado", p.getEstado());
+            pm.put("telefono", p.getTelefono());
+            pm.put("lat", p.getLat());
+            pm.put("lng", p.getLng());
+            pm.put("incidencia", p.getIncidencia());
+            return pm;
+        }).toList());
+
+        return ResponseEntity.ok(result);
     }
 }
