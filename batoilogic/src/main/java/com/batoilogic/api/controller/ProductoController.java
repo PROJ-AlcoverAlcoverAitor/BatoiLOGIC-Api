@@ -76,4 +76,28 @@ public class ProductoController {
 
         return ResponseEntity.ok(inv);
     }
+
+    // GET /productos/inventario — todos los productos con su stock
+    @GetMapping("/inventario")
+    public ResponseEntity<?> getInventarioCompleto(HttpServletRequest request) {
+        String rol = (String) request.getAttribute("rol");
+        if (!"admin".equals(rol))
+            return ResponseEntity.status(403).body(Map.of("error", "Solo admins"));
+
+        List<Inventario> inventario = inventarioRepo.findAll();
+        List<Map<String, Object>> result = inventario.stream()
+                .map(inv -> {
+                    Map<String, Object> m = new java.util.HashMap<>();
+                    m.put("id", inv.getId());
+                    m.put("productoId", inv.getProducto().getId());
+                    m.put("productoNombre", inv.getProducto().getNombre());
+                    m.put("stock", inv.getStock());
+                    m.put("stockMin", inv.getStockMin());
+                    m.put("updatedAt", inv.getUpdatedAt());
+                    return m;
+                })
+                .toList();
+
+        return ResponseEntity.ok(result);
+    }
 }
