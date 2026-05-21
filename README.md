@@ -14,9 +14,9 @@ API REST para el sistema de gestión de pedidos y repartidores de BatoiLogic. De
 Edita `src/main/resources/application.properties`:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
-spring.datasource.username=postgres
-spring.datasource.password=TU_PASSWORD
+spring.datasource.url=jdbc:postgresql://localhost:5432/batoilogic
+spring.datasource.username=batoiuser
+spring.datasource.password=4206
 server.port=5000
 jwt.secret=TU_SECRET_KEY
 ```
