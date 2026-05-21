@@ -18,8 +18,8 @@ public class ProcesoExportacionYAsignacion {
 
         System.out.println("Procesando pedidos de ayer (" + ayer + ") para moverlos a hoy (" + hoy + ")...");
 
-        String urlDb = "jdbc:postgresql://localhost:5432/postgres";
-        String userDb = "postgres";
+        String urlDb = "jdbc:postgresql://localhost:5432/batoilogic";
+        String userDb = "batoiuser";
         String passDb = "4206";
 
         Connection conn = null;
